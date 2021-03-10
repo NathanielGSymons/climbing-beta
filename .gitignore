@@ -1,0 +1,12 @@
+HELP.md
+target/
+
+
+### Intellij IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
