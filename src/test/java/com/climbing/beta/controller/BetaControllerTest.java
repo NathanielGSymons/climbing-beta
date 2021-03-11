@@ -40,7 +40,7 @@ class BetaControllerTest {
     }
 
     @Test
-    void returnsBetaUrl() throws Exception {
+    void climbBetaRequestFound_returnsClimbBetaWith200Response() throws Exception {
         ClimbBeta climbBeta = new ClimbBeta();
         climbBeta.setCrag("crag");
         climbBeta.setClimb("climb");
@@ -55,6 +55,32 @@ class BetaControllerTest {
         this.mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(content().string(climbBetaAsJson));
+
+        verify(betaService).GetBeta("crag", "climb");
+    }
+
+    @Test
+    void climbBetaRequestNotFound_returnsNotFoundResponse() throws Exception {
+        when(betaService.GetBeta(any(), any())).thenReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = get("/api/crag/crag/climb/climb")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound());
+
+        verify(betaService).GetBeta("crag", "climb");
+    }
+
+    @Test
+    void betaServiceThrowsRuntimeException_returnsInternalServerErrorResponse() throws Exception {
+        when(betaService.GetBeta(any(), any())).thenThrow(new RuntimeException("message"));
+
+        MockHttpServletRequestBuilder requestBuilder = get("/api/crag/crag/climb/climb")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(requestBuilder)
+                .andExpect(status().isInternalServerError());
 
         verify(betaService).GetBeta("crag", "climb");
     }

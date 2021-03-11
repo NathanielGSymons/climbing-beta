@@ -31,7 +31,7 @@ public class BetaControllerIntegrationTest {
     }
 
     @Test
-    void serverReturnsBetaUrl() throws Exception {
+    void climbRequestIsInDb_returnsClimbBeta() throws Exception {
         ClimbBeta climbBeta = new ClimbBeta();
         climbBeta.setId(1);
         climbBeta.setCrag("crag");
@@ -46,5 +46,23 @@ public class BetaControllerIntegrationTest {
         this.mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(content().string(climbBetaAsJson));
+    }
+
+    @Test
+    void cragRequestedIsNotInDb_returnsNotFoundStatus() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = get("/api/crag/cragNotInDb/climb/anyClimb")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void climbRequestedIsNotInDb_returnsNotFoundStatus() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = get("/api/crag/crag/climb/climbNotInDb")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound());
     }
 }

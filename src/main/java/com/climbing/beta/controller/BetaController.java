@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api")
@@ -19,8 +20,12 @@ public class BetaController {
     @GetMapping(value = "/crag/{cragName}/climb/{climbName}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClimbBeta> getClimbBeta(@PathVariable("cragName") String crag,
                                                   @PathVariable("climbName") String climb) {
-        return betaService.GetBeta(crag, climb)
-                .map(climbBeta -> ResponseEntity.ok().body(climbBeta))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+        try {
+            return betaService.GetBeta(crag, climb)
+                    .map(climbBeta -> ResponseEntity.ok().body(climbBeta))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
